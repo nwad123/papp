@@ -1,8 +1,10 @@
 #include "occupancy_profile.h"
+#include "address.h"
 #include "cache.h"
 #include "eviction_set.h"
 #include "utility.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void occupancy_profile(eviction_set es, const size_t num_iterations, const char* output_filename)
 {
@@ -22,8 +24,7 @@ void occupancy_profile(eviction_set es, const size_t num_iterations, const char*
                 for (size_t l_prime = 0; l_prime < es.cache_lines + es.warmup_lines; l_prime++)
                 {
                     // Calculate the address of the line we want to observe, (s`, l`)
-                    const size_t line_index = s_prime * l_prime;
-                    byte* line = es.occupation_section.start_addr + (line_index * CACHE_LINE_SIZE);
+                    byte* line = es.warmup_section.start_addr + (s_prime * CACHE_LINE_SIZE) + (l_prime * CACHE_LINE_SIZE * es.cache_sets);
 
                     // Flush ES from the cache 
                     flush_eviction_set(es);

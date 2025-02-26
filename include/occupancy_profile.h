@@ -1,6 +1,7 @@
 #ifndef OCCUPANCY_H
 #define OCCUPANCY_H
 
+#include "address.h"
 #include "cache.h"
 #include "eviction_set.h"
 #include <stddef.h>

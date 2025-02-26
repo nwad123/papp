@@ -1,3 +1,4 @@
+#include "address.h"
 #include "cache.h"
 #include "eviction_set.h"
 #include "occupancy_profile.h"

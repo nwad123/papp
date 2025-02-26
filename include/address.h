@@ -2,6 +2,7 @@
 #define ADDRESS_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 #define BLOCK_BITS 6 
 #define NUM_SETS 512 
@@ -33,5 +34,15 @@ static inline void* concat_address(const uint64_t tag, const uint64_t set, const
 }
 
 typedef uint8_t byte;
+
+static inline void debug_address(const void* ptr)
+{
+    const uint64_t set = get_set_index(ptr);
+    const uint64_t block = get_block_index(ptr);
+    const uint64_t tag = get_tag(ptr);
+
+    printf("Address: %p, set: %lu, block: %lu, tag: %lu\n", 
+           ptr, set, block, tag);
+}
 
 #endif
