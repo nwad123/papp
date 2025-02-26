@@ -19,7 +19,7 @@ void occupancy_profile(eviction_set es, const size_t num_iterations, const char*
             // For each line, (s`, l`), in ES
             for (size_t s_prime = 0; s_prime < es.cache_sets; s_prime++)
             {
-                for (size_t l_prime = 0; l_prime < es.cache_lines; l_prime++)
+                for (size_t l_prime = 0; l_prime < es.cache_lines + es.warmup_lines; l_prime++)
                 {
                     // Calculate the address of the line we want to observe, (s`, l`)
                     const size_t line_index = s_prime * l_prime;
