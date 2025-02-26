@@ -15,7 +15,7 @@ int main()
         fflush(stdout);
 
         eviction_set es = new_eviction_set(l2_sets, l2_associativity, warmup_lines);
-        occupancy_profile(es, 1, "results/occupancy_no_warmup_O1_CPU4.csv");
+        occupancy_profile(es, 100, "results/occupancy_no_warmup_O1_CPU4.csv");
         free_eviction_set(&es);
         
         printf("Finished\n");
@@ -31,7 +31,7 @@ int main()
         fflush(stdout);
 
         eviction_set es = new_eviction_set(l2_sets, l2_associativity, warmup_lines);
-        occupancy_profile(es, 1, "results/occupancy_8_warmup_lines_O1_CPU4.csv");
+        occupancy_profile(es, 100, "results/occupancy_8_warmup_lines_O1_CPU4.csv");
         free_eviction_set(&es);
         
         printf("Finished\n");
