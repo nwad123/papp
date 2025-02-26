@@ -10,6 +10,7 @@
 #define L1_SIZE 32768
 #define L2_SIZE 262144
 #define L2_SETS 512
+#define L2_ASSOCIATIVITY 8
 
 static inline __attribute__((always_inline))
 void flush_buffer(const byte* start, const size_t length)
