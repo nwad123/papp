@@ -18,7 +18,7 @@ set(SRCS src/eviction_set.c src/occupancy_profile.c)
 
 # Optimization Flags
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) # LTO
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O1")
 # set(CMAKE_BUILD_TYPE Debug) 
 
 # Analysis Application
