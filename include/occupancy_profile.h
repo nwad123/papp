@@ -18,9 +18,9 @@
 ///
 /// The output CSV file follows the format of:
 ///
-/// Set,Iteration,SPrime,LPrime,Cycles
-/// 0,0,0,0,270
-/// 0,0,1,0,45
+/// Iteration,SetIndex,LineIndex,Cycles
+/// 0,0,0,270
+/// 0,1,0,45
 /// ...
 void occupancy_profile(/*inout*/ eviction_set es, 
                        /*in*/ const size_t set,
@@ -49,8 +49,6 @@ void prime_set_write_with_warmup(/*inout*/ eviction_set es, /*in*/ const size_t 
         volatile byte* addr = es.warmup_section.start_addr 
             + (line * set_stride) 
             + offset;
-        printf("  Warmup | ");
-        debug_address(addr);
         *addr = *addr * 2;
     }
 
@@ -61,8 +59,6 @@ void prime_set_write_with_warmup(/*inout*/ eviction_set es, /*in*/ const size_t 
         volatile byte* addr = es.occupation_section.start_addr 
             + (line * set_stride) 
             + offset;
-        printf("  Occupancy | ");
-        debug_address(addr);
         *addr = *addr * 2;
     }
 }

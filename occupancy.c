@@ -23,11 +23,6 @@ int main()
         fflush(stdout);
 
         eviction_set es = new_eviction_set(l2_sets, l2_associativity, warmup_lines);
-        printf("Eviction set\n");
-        printf("Warmup: ");
-        debug_address(es.warmup_section.start_addr);
-        printf("Occupation: ");
-        debug_address(es.occupation_section.start_addr);
 
         for (const size_t* set = test_set; set < (test_set + size_test_set); set++)
         {

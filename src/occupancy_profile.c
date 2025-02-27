@@ -10,7 +10,7 @@ void occupancy_profile(eviction_set es, const size_t set, const size_t num_itera
 {
     // Init the CSV file 
     FILE* csv = fopen(output_filename, "w");
-    fprintf(csv, "Set,Iteration,SPrime,LPrime,Cycles\n");
+    fprintf(csv, "Iteration,SetIndex,LineIndex,Cycles\n");
 
     // For the number of iterations given in the call
     for (size_t iter = 0; iter < num_iterations; iter ++)
@@ -25,9 +25,6 @@ void occupancy_profile(eviction_set es, const size_t set, const size_t num_itera
                     + (s_prime * CACHE_LINE_SIZE) 
                     + (l_prime * CACHE_LINE_SIZE * es.cache_sets);
 
-                printf("(s`, l`): (%lu, %lu) | ", s_prime, l_prime);
-                debug_address(line);
-
                 // Flush ES from the cache 
                 flush_eviction_set(es);
 
@@ -39,15 +36,13 @@ void occupancy_profile(eviction_set es, const size_t set, const size_t num_itera
 
                 // Print the data from this iteration
                 // Format is: "Set,Iteration,SPrime,LPrime,Cycles"
-                fprintf(csv, "%lu,%lu,%lu,%lu,%lu\n",
-                        set,iter,s_prime,l_prime,time);
+                fprintf(csv, "%lu,%lu,%lu,%lu\n",
+                        iter,s_prime,l_prime,time);
                 fence();
             } // l_prime
-            if (s_prime > 1) goto close_file;
         } // s_prime 
     } // iter 
     
     // Close the csv file 
-close_file:
     fclose(csv);
 }
