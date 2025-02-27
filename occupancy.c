@@ -6,10 +6,9 @@
 
 int main()
 {
-    /*const size_t test_set[] = {0, 1, 3, 64, 128, 256, 384, 448, 500, 510, 511};*/
-    const size_t test_set[] = {0, 256, 511};
+    const size_t test_set[] = {0, 1, 3, 64, 128, 256, 384, 448, 500, 510, 511};
     const size_t size_test_set = sizeof(test_set) / sizeof(size_t);
-    const size_t iterations = 1;
+    const size_t iterations = 50;
     const size_t l2_sets = L2_SETS;
     const size_t l2_associativity = L2_ASSOCIATIVITY;
     
