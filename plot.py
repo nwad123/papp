@@ -1,15 +1,27 @@
+import os
 import seaborn as sns 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from itertools import product
-from math import isnan
-from tqdm import tqdm
+import re
 
-def timing(*, plot=True) -> float:
+class BoundChecker:
+    def __init__(self, lower_bound, upper_bound):
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
+
+    def check_bound(self, value):
+        if value < self.lower_bound:
+            return 0
+        elif self.lower_bound <= value <= self.upper_bound:
+            return 1
+        else:
+            return 2
+
+def timing(*, plot=True) -> tuple[float, float, float]:
     df = pd.read_csv("results/timing.csv")
-    ram_bound = df["RAM"].mean() + df["RAM"].std()
-    df = df[~(df > ram_bound).any(axis=1)] # drop any measurement greater than ram max
+    ram_upper = df["RAM"].mean() + df["RAM"].std()
+    df = df[~(df > ram_upper).any(axis=1)] # drop any measurement greater than ram max
    
     print("#### Timing Analysis ####")
     for col in df.columns:
@@ -17,18 +29,19 @@ def timing(*, plot=True) -> float:
     print()
 
     if not plot:
-        return ram_bound 
+        return ram_upper 
 
     # Create a bar plot
     fig = plt.figure(figsize=(12, 6))
     
     # Plot each column as a separate set of bars
     for column in df.columns:
-        plt.hist(df[column], bins=np.arange(0,int(ram_bound)), label=column, alpha = 0.5)
+        plt.hist(df[column], bins=np.arange(0,int(ram_upper)), label=column, alpha = 0.5)
     
     # Add bounds to L2 and L3 
     l2_upper = df["L2"].mean() + df["L2"].std()
     l3_lower = df["L3"].mean() - df["L3"].std()
+    l3_upper = df["L3"].mean() + 2 * df["L3"].std()
     y_min, y_max = plt.gca().get_ylim()
     plt.vlines(l2_upper, y_min, y_max, label="L2 Upper Bound", color="tab:orange", linestyle="--")
     plt.vlines(l3_lower, y_min, y_max, label="L3 Lower Bound", color="tab:green", linestyle="--")
@@ -46,7 +59,7 @@ def timing(*, plot=True) -> float:
     fig.savefig("figs/latencies.pdf")
     plt.close(fig)
 
-    return ram_bound
+    return (l3_lower, l3_upper, ram_upper)
 
 def nlp(ram_bound: float, plot=False):
     df = pd.read_csv("results/next_line.csv")
@@ -122,8 +135,56 @@ def stride(ram_bound: float, *, plot=False, max_lines=20):
 
     return
 
+def occupancy(bounds: BoundChecker):
+    file_match = re.compile(r"(\d+)?.*_O1_CPU4_S([0-9]+)")
+    
+    os.makedirs("figs/occupancy", exist_ok=True)
+
+    for file in os.listdir("results/occupancy"):
+        matches = file_match.findall(file)
+        if len(matches) != 1: 
+            continue
+
+        (warmup, s) = matches[0]
+        if warmup == '':
+            warmup = 0
+        else:
+            warmup = int(warmup)
+        s = int(s)
+
+        # get data 
+        df = pd.read_csv(f"results/occupancy/{file}")
+        data = df.groupby(['Iteration', 'SetIndex', 'LineIndex'])['Cycles'].mean().reset_index()
+        data = data.drop(['Iteration'], axis = 1).pivot_table(index='SetIndex', columns='LineIndex', values='Cycles')
+        
+        expected_min = s - 10
+        expected_max = s + 10
+
+        if expected_min < 0:
+            expected_max += abs(expected_min)
+            expected_min = 0
+
+        if expected_max > 511:
+            expected_min -= expected_max - 511 
+            expected_max = 511
+
+        data = data.loc[df.index[expected_min:expected_max+1]]
+
+        fig = plt.figure(figsize=(6, 4.5))
+        sns.heatmap(data, vmin=50, vmax=300, cbar_kws={'label': 'Cycles'})
+        plt.gca().set_xlabel("Line index")
+        plt.gca().set_ylabel("Set index")
+        plt.title(f"Set {s} with {warmup} warmup lines") 
+        fig.savefig(f"figs/occupancy/s{s}_w{warmup}.png", dpi=600)
+        plt.close(fig)
+
+
+        
+
 if __name__ == "__main__":
-    ram_bound = timing(plot=True)
+    (l3_lower, l3_upper, ram_bound) = timing(plot=True)
+    l3_bounds = BoundChecker(l3_lower, l3_upper)
     # nlp(ram_bound, plot=True)
     # stride(ram_bound, plot=True)
+    occupancy(l3_bounds)
 
