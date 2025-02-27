@@ -46,7 +46,11 @@ void prime_set_write_with_warmup(/*inout*/ eviction_set es, /*in*/ const size_t 
     // the priming of the set
     for (size_t line = 0; line < es.warmup_lines; line++)
     {
-        byte* addr = es.warmup_section.start_addr + (line * set_stride);
+        volatile byte* addr = es.warmup_section.start_addr 
+            + (line * set_stride) 
+            + offset;
+        printf("  Warmup | ");
+        debug_address(addr);
         *addr = *addr * 2;
     }
 
@@ -54,7 +58,11 @@ void prime_set_write_with_warmup(/*inout*/ eviction_set es, /*in*/ const size_t 
     // to each line to prime it
     for (size_t line = 0; line < es.cache_lines; line++)
     {
-        byte* addr = es.occupation_section.start_addr + (line * set_stride);
+        volatile byte* addr = es.occupation_section.start_addr 
+            + (line * set_stride) 
+            + offset;
+        printf("  Occupancy | ");
+        debug_address(addr);
         *addr = *addr * 2;
     }
 }

@@ -25,6 +25,9 @@ void occupancy_profile(eviction_set es, const size_t set, const size_t num_itera
                     + (s_prime * CACHE_LINE_SIZE) 
                     + (l_prime * CACHE_LINE_SIZE * es.cache_sets);
 
+                printf("(s`, l`): (%lu, %lu) | ", s_prime, l_prime);
+                debug_address(line);
+
                 // Flush ES from the cache 
                 flush_eviction_set(es);
 
@@ -40,9 +43,11 @@ void occupancy_profile(eviction_set es, const size_t set, const size_t num_itera
                         set,iter,s_prime,l_prime,time);
                 fence();
             } // l_prime
+            if (s_prime > 1) goto close_file;
         } // s_prime 
     } // iter 
     
     // Close the csv file 
+close_file:
     fclose(csv);
 }
