@@ -1,27 +1,30 @@
 # Occupancy Profiling for All Sets
 
 In the original version of the Prefetcher-Aware Prime and Probe (PAPP) paper an 
-algorithm was used to generate occupancy profiling for a single set. I extended 
-this algorithm simply to include _all_ of the sets.
+algorithm was used to generate occupancy profiling for a single set. The reason 
+that we use this algorithm to generate data for a single set at a time is that 
+if we do it for _all_ sets then it generates really big datasets. I originally 
+did it for _all_ sets and naively used a CSV format to output the data, and 
+I ended up with a massive 10 Gb CSV that our lab machine could not really handle.
 
-This algorithm originates from the [original PAPP authors][PappGithub], but has 
-been extended by me.
+So, I had to regenerate results individually for each set, $s$.
+
+This algorithm originates from the [original PAPP authors][PappGithub].
 
 ```
 m <- number of sets in target cache
 n <- number of lines per set (could be greater than physical limit)
 N <- number of test iterations
+s <- set currently being tested
 
 ES <- eviction set of size m x n
 
-For s In 1..m Do
-    For iter In 0..N Do
-        For line In ES Do
-            Flush ES from the cache 
-            Prime set s in ES 
-            Record access time to line 
-        End For
-    End For 
+For iter In 0..N Do
+    For line In ES Do
+        Flush ES from the cache 
+        Prime set s in ES 
+        Record access time to line 
+    End For
 End For 
 ```
 
