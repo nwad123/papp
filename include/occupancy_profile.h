@@ -12,6 +12,7 @@
 ///           `es` is set up to have a warm up section then this will 
 ///           perform the warmup first as described in Section 3.1 of 
 ///           the PAPP paper. 
+/// @param set The set to profile.
 /// @param num_iterations The number of iterations to run the analysis for.
 /// @param output_filename The CSV file to write the results to.
 ///
@@ -22,8 +23,9 @@
 /// 0,0,1,0,45
 /// ...
 void occupancy_profile(/*inout*/ eviction_set es, 
+                       /*in*/ const size_t set,
                        /*in*/ const size_t num_iterations, 
-                       /*in*/const char* output_filename);
+                       /*in*/ const char* output_filename);
 
 /// Primes a given set (with warmup if specified in es) inside an eviction set.
 ///
